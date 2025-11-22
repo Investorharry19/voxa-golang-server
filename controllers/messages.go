@@ -25,7 +25,7 @@ import (
 // @Tags MessageRoutes
 // @Accept json
 // @Produce json
-// @Param messageData body models.TextMessageRequestDTO true "Text message data"
+// @Param messageData body models.TextMessageRequestSwagger true "Text message data"
 // @Success 201 {object} map[string]interface{} "Message sent"
 // @Failure 400 {object} map[string]string "Bad Request"
 // @Failure 404 {object} map[string]string "User does not exist"
@@ -117,6 +117,7 @@ func SendAudioMessage(c *fiber.Ctx) error {
 	}
 
 	// Run FFmpeg
+	// Run FFmpeg
 	args := []string{
 		"-i", tempInputPath,
 		"-af", filters,
@@ -128,17 +129,52 @@ func SendAudioMessage(c *fiber.Ctx) error {
 		tempOutputPath,
 	}
 
+	fmt.Println("FFmpeg args:", args)
+	fmt.Println("Filters:", filters)
+
 	cmd := exec.Command("ffmpeg", args...)
 	output, err := cmd.CombinedOutput()
+
+	// Always print output, even on success
+	fmt.Println("FFmpeg output:", string(output))
+
+	if err != nil {
+		fmt.Printf("FFmpeg error: %s\n", string(output))
+		return c.Status(500).JSON(fiber.Map{"message": "Error processing audio"})
+	}
+	// After FFmpeg runs
+	inputInfo, _ := os.Stat(tempInputPath)
+	outputInfo, _ := os.Stat(tempOutputPath)
+
+	fmt.Println("Input file size:", inputInfo.Size())
+	fmt.Println("Output file size:", outputInfo.Size())
+
 	if err != nil {
 		fmt.Printf("FFmpeg error: %s\n", string(output))
 		return c.Status(500).JSON(fiber.Map{"message": "Error processing audio"})
 	}
 
+	// Check if file exists and has content
+	fileInfo, err := os.Stat(tempOutputPath)
+	if err != nil {
+		fmt.Println("Output file error:", err)
+	} else {
+		fmt.Println("Output file size:", fileInfo.Size())
+	}
+
+	openedFile, err := os.Open(tempOutputPath)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": "Failed to open uploaded file"})
+	}
+	defer openedFile.Close()
+
 	// Upload to Cloudinary
-	uploadResult, err := config.Cloud.Upload.Upload(c.Context(), tempOutputPath, uploader.UploadParams{
+	uploadResult, err := config.Cloud.Upload.Upload(c.Context(), openedFile, uploader.UploadParams{
 		ResourceType: "video",
+		Folder:       "Voxa_audio",
 	})
+	fmt.Println(uploadResult.SecureURL)
+	fmt.Println(uploadResult.PublicID)
 	if err != nil {
 		fmt.Printf("Cloudinary upload error: %v\n", err)
 		return c.Status(500).JSON(fiber.Map{"message": "Error uploading to Cloudinary"})
@@ -386,8 +422,7 @@ func DeleteAllMessages(c *fiber.Ctx) error {
 // @Summary Convert Audio to Video
 // @Description Generate a video from an audio URL and a background image
 // @Tags AudioProcessing
-// @Accept json
-// @Produce mp4
+// @Produce octet-stream
 // @Param audioUrl query string true "URL of the audio file"
 // @Success 200 {file} binary "Video file returned"
 // @Failure 400 {object} map[string]string "Bad request"
@@ -486,9 +521,3 @@ func ProcessAudioMessage(c *fiber.Ctx) error {
 
 	return c.Send(audioData)
 }
-
-/*
-
-
-
- */

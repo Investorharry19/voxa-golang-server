@@ -36,7 +36,7 @@ func main() {
 	routers.UserRouter(app)
 	routers.MessageRouter(app)
 
-	database.ConnectMongoDB()
 	config.InitCloudinary()
+	database.ConnectMongoDB()
 	app.Listen(":3000")
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"os"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -14,7 +15,7 @@ import (
 var DB *mongo.Database
 
 func ConnectMongoDB() {
-	uri := "mongodb://localhost:27017" // <-- replace this
+	uri := os.Getenv("MONGO_URI")
 	clientOptions := options.Client().ApplyURI(uri)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)

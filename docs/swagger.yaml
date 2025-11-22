@@ -1,5 +1,46 @@
 basePath: /
 definitions:
+  models.Message:
+    properties:
+      audioUrl:
+        type: string
+      createdAt:
+        type: string
+      id:
+        type: string
+      isOpened:
+        type: boolean
+      isStarred:
+        type: boolean
+      messageText:
+        type: string
+      ownerUsername:
+        type: string
+      publicId:
+        type: string
+    type: object
+  models.MessageMarkAsRead:
+    properties:
+      isStarred:
+        type: boolean
+    type: object
+  models.TextMessageRequestDTO:
+    properties:
+      createdAt:
+        type: string
+      id:
+        type: string
+      isOpened:
+        type: boolean
+      isStarred:
+        type: boolean
+      messageText:
+        type: string
+      ownerUsername:
+        type: string
+      type:
+        type: string
+    type: object
   models.UserRequestDTO:
     properties:
       password:
@@ -10,8 +51,8 @@ definitions:
 host: localhost:3000
 info:
   contact: {}
-  description: API for processing audio with voice filters
-  title: Audio Processing API
+  description: Voxa Golang Server API
+  title: Voxa API
   version: "1.0"
 paths:
   /account/current-user:
@@ -19,12 +60,6 @@ paths:
       consumes:
       - application/json
       description: Retrieve the authenticated user's information
-      parameters:
-      - description: Bearer JWT token
-        in: header
-        name: Authorization
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -51,6 +86,8 @@ paths:
             additionalProperties:
               type: string
             type: object
+      security:
+      - BearerAuth: []
       summary: Get Current User
       tags:
       - Account
@@ -137,6 +174,323 @@ paths:
       summary: Register User
       tags:
       - Account
+  /convert:
+    get:
+      description: Generate a video from an audio URL and a background image
+      parameters:
+      - description: URL of the audio file
+        in: query
+        name: audioUrl
+        required: true
+        type: string
+      produces:
+      - application/octet-stream
+      responses:
+        "200":
+          description: Video file returned
+          schema:
+            type: file
+        "400":
+          description: Bad request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Convert Audio to Video
+      tags:
+      - AudioProcessing
+  /message/delete-all-messages:
+    delete:
+      consumes:
+      - application/json
+      description: Delete all messages of the authenticated user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: All messages deleted
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Invalid user ID
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete All Messages
+      tags:
+      - MessageRoutes
+  /message/delete-message{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a specific message by the authenticated user
+      parameters:
+      - description: Message ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Message deleted
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Invalid message ID or user ID
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Message not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete a Message
+      tags:
+      - MessageRoutes
+  /message/get-messages:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve all messages for the authenticated user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of messages
+          schema:
+            items:
+              $ref: '#/definitions/models.Message'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: No messages found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get All Messages
+      tags:
+      - MessageRoutes
+  /message/mark-as-read/{id}:
+    patch:
+      consumes:
+      - application/json
+      description: Mark a specific message as read by the authenticated user
+      parameters:
+      - description: Message ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Message updated
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Invalid message ID or user ID
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Mark Message as Read
+      tags:
+      - MessageRoutes
+  /message/send/audio-message:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Upload and send an audio message for a user
+      parameters:
+      - description: Owner username
+        in: formData
+        name: ownerUsername
+        required: true
+        type: string
+      - description: Voice filter option
+        in: formData
+        name: voice
+        required: true
+        type: string
+      - description: Audio file
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Audio message uploaded successfully
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Invalid request or file upload error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: User not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Send Audio Message
+      tags:
+      - MessageRoutes
+  /message/send/text-message:
+    post:
+      consumes:
+      - application/json
+      description: Send a text message from a user
+      parameters:
+      - description: Text message data
+        in: body
+        name: messageData
+        required: true
+        schema:
+          $ref: '#/definitions/models.TextMessageRequestDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Message sent
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: User does not exist
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Add Text Message
+      tags:
+      - MessageRoutes
+  /message/star-message/{id}:
+    patch:
+      consumes:
+      - application/json
+      description: Mark a specific message as starred or unstarred by the authenticated
+        user
+      parameters:
+      - description: Message ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Star state
+        in: body
+        name: state
+        required: true
+        schema:
+          $ref: '#/definitions/models.MessageMarkAsRead'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Message updated
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Invalid message ID or request body
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Message not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Star or Unstar a Message
+      tags:
+      - MessageRoutes
   /process:
     post:
       consumes:
@@ -174,5 +528,11 @@ paths:
             type: object
       summary: Process audio with voice filter
       tags:
-      - Audio
+      - AudioProcessing
+securityDefinitions:
+  BearerAuth:
+    description: Enter your token with the "Bearer " prefix, e.g. "Bearer eyJhbGciOi..."
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

@@ -40,45 +40,15 @@ type AudioMessageRequestDTO struct {
 type MessageMarkAsRead struct {
 	State *bool `json:"isStarred"`
 }
+type TextMessageRequestSwagger struct {
+	OwnerUsername string `json:"ownerUsername"`
+	MessageText   string `json:"messageText,omitempty"`
+}
 
 /*
 
-import mongoose, { Schema, mongo } from "mongoose";
-
-const schema = new Schema(
-  {
-    ownerUsername: {
-      type: String,
-      required: true,
-      lowercase: true,
-    },
-    type: {
-      type: String,
-      required: true,
-    },
-    messageText: {
-      type: String,
-    },
-    audioUrl: {
-      type: String,
-    },
-    isOpened: {
-      type: Boolean,
-      default: false,
-    },
-    publicId: {
-      type: String,
-      default: "",
-    },
-    isStarred: {
-      type: Boolean,
-      default: false,
-    },
-  },
-  { timestamps: true }
-);
 
 
 
 
-*/
+ */

@@ -105,9 +105,10 @@ func LoginUser(c *fiber.Ctx) error {
 	}
 
 	token, _ := utils.GenerateJWT("", string(userdata.ID.Hex()), 10)
-	loginresponse := models.UserToUserResponse(&userdata, token)
 
-	return utils.SuccessResponse(c, 201, "Logged In", loginresponse)
+	return utils.SuccessResponse(c, 201, "Logged In", struct {
+		Token string `json:"token"`
+	}{Token: token})
 }
 
 // GetCurrentUser godoc
