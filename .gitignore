@@ -1,0 +1,20 @@
+# Dependencies
+vendor/
+
+# Binaries
+*.exe
+main
+
+# Environment
+.env
+
+# IDE
+.idea/
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Generated docs (optional - some prefer to commit these)
+# docs/

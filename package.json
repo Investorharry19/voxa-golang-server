@@ -1,0 +1,22 @@
+{
+  "name": "voxa-server-golang",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "go build -o main.exe main.go && .\\main.exe",
+    "dev": "go run main.go",
+    "build": "go build -o main.exe main.go",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Investorharry19/voxa-golang-server.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Investorharry19/voxa-golang-server/issues"
+  },
+  "homepage": "https://github.com/Investorharry19/voxa-golang-server#readme",
+  "description": ""
+}

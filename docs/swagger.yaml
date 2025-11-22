@@ -1,0 +1,178 @@
+basePath: /
+definitions:
+  models.UserRequestDTO:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+host: localhost:3000
+info:
+  contact: {}
+  description: API for processing audio with voice filters
+  title: Audio Processing API
+  version: "1.0"
+paths:
+  /account/current-user:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve the authenticated user's information
+      parameters:
+      - description: Bearer JWT token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: User authenticated
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get Current User
+      tags:
+      - Account
+  /account/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate a user and return a JWT token
+      parameters:
+      - description: User login data
+        in: body
+        name: loginData
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserRequestDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Logged In
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Invalid Credentials
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Login User
+      tags:
+      - Account
+  /account/register:
+    post:
+      consumes:
+      - application/json
+      description: Register a new user
+      parameters:
+      - description: User registration data
+        in: body
+        name: registerData
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserRequestDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: User created
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "461":
+          description: Username already exists
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Register User
+      tags:
+      - Account
+  /process:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Applies voice filter to uploaded audio file
+      parameters:
+      - description: Audio file
+        in: formData
+        name: file
+        required: true
+        type: file
+      - description: Voice filter (1-4)
+        in: formData
+        name: voice
+        required: true
+        type: string
+      produces:
+      - audio/mpeg
+      responses:
+        "200":
+          description: Processed audio
+          schema:
+            type: file
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Process audio with voice filter
+      tags:
+      - Audio
+swagger: "2.0"
