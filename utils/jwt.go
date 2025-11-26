@@ -3,12 +3,13 @@ package utils
 
 import (
 	"errors"
+	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt"
 )
 
-var SecretKey = []byte("supersecretkey")
+var SecretKey = []byte(os.Getenv("JWT_SECERT"))
 
 func GenerateJWT(email string, id string, validUntill int) (string, error) {
 
