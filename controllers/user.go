@@ -17,33 +17,33 @@ func GetUsers(c *fiber.Ctx) error {
 }
 
 // RegisterUser godoc
-// @Summary Register User
-// @Description Register a new user
+// @Summary Register a new user
+// @Description Register a new user with username and password
 // @Tags Account
 // @Accept json
 // @Produce json
 // @Param registerData body models.UserRequestDTO true "User registration data"
-// @Success 201 {object} map[string]string "User created"
-// @Failure 400 {object} map[string]string "Bad Request"
-// @Failure 461 {object} map[string]string "Username already exists"
-// @Failure 500 {object} map[string]string "Internal server error"
+// @Success 201 {object} utils.APIResponse "User created successfully"
+// @Failure 400 {object} utils.APIResponse "Bad request or missing fields"
+// @Failure 461 {object} utils.APIResponse "Username already exists"
+// @Failure 500 {object} utils.APIResponse "Internal server error"
 // @Router /account/register [post]
 func RegisterUser(c *fiber.Ctx) error {
 	println("Register")
 	registerData := models.UserRequestDTO{}
 	if err := c.BodyParser(&registerData); err != nil {
 		return utils.ErrorResponse(c, 400, "Invalid Json")
-
 	}
 
 	if registerData.Password == "" || registerData.Username == "" {
 		return utils.ErrorResponse(c, 400, "Username and password are required")
-
 	}
+
 	hashed, err := utils.HashPasswordSecure(registerData.Password)
 	if err != nil {
 		return utils.ErrorResponse(c, 500, "Internal server Error")
 	}
+
 	userCollection := database.GetCollection("users")
 	saveUser := models.User{
 		Username:  registerData.Username,
@@ -51,6 +51,7 @@ func RegisterUser(c *fiber.Ctx) error {
 		PushToken: make([]string, 0),
 		ID:        primitive.NewObjectID(),
 	}
+
 	res, err := userCollection.InsertOne(c.Context(), saveUser)
 	if err != nil {
 		if we, ok := err.(mongo.WriteException); ok {
@@ -62,8 +63,8 @@ func RegisterUser(c *fiber.Ctx) error {
 		}
 		return utils.ErrorResponse(c, 500, err.Error())
 	}
-	return utils.SuccessResponse(c, 201, "User Created", res)
 
+	return utils.SuccessResponse(c, 201, "User Created", res)
 }
 
 // LoginUser godoc
@@ -143,10 +144,3 @@ func GetCurrentUser(c *fiber.Ctx) error {
 	return utils.SuccessResponse(
 		c, 201, "User authenticated", models.UserToUserResponse(&userResponse, token))
 }
-
-/*
-
-
-
-
- */

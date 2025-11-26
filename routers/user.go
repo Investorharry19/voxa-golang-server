@@ -9,8 +9,8 @@ import (
 func UserRouter(app *fiber.App) {
 	accountGroup := app.Group("/account")
 
-	accountGroup.Get("/users", controllers.GetUsers)
 	accountGroup.Post("/register", controllers.RegisterUser)
 	accountGroup.Post("/login", controllers.LoginUser)
 	accountGroup.Get("/current-user", middlewares.RequireAuth, controllers.GetCurrentUser)
+	accountGroup.Get("/users", controllers.GetUsers)
 }
