@@ -14,7 +14,7 @@ var Cloud *cloudinary.Cloudinary
 func InitCloudinary() {
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		log.Println("No .env file found — continuing with system environment variables")
 	}
 
 	cld, err := cloudinary.NewFromParams(
