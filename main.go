@@ -14,6 +14,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 
 	_ "github.com/Investorharry19/voxa-golang-server/docs"
 
@@ -38,5 +39,9 @@ func main() {
 
 	config.InitCloudinary()
 	database.ConnectMongoDB()
-	app.Listen(":3000")
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080" // fallback for local development
+	}
+	app.Listen(":" + port)
 }
