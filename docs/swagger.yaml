@@ -1,4 +1,3 @@
-basePath: /
 definitions:
   models.Message:
     properties:
@@ -24,21 +23,11 @@ definitions:
       isStarred:
         type: boolean
     type: object
-  models.TextMessageRequestDTO:
+  models.TextMessageRequestSwagger:
     properties:
-      createdAt:
-        type: string
-      id:
-        type: string
-      isOpened:
-        type: boolean
-      isStarred:
-        type: boolean
       messageText:
         type: string
       ownerUsername:
-        type: string
-      type:
         type: string
     type: object
   models.UserRequestDTO:
@@ -48,7 +37,20 @@ definitions:
       username:
         type: string
     type: object
-host: localhost:3000
+  utils.APIResponse:
+    properties:
+      data:
+        description: payload (optional)
+      error_code:
+        description: internal or business error
+        type: integer
+      message:
+        description: readable human message
+        type: string
+      success:
+        description: '"success" or "error"'
+        type: boolean
+    type: object
 info:
   contact: {}
   description: Voxa Golang Server API
@@ -136,7 +138,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: Register a new user
+      description: Register a new user with username and password
       parameters:
       - description: User registration data
         in: body
@@ -148,30 +150,22 @@ paths:
       - application/json
       responses:
         "201":
-          description: User created
+          description: User created successfully
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/utils.APIResponse'
         "400":
-          description: Bad Request
+          description: Bad request or missing fields
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/utils.APIResponse'
         "461":
           description: Username already exists
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/utils.APIResponse'
         "500":
           description: Internal server error
           schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: Register User
+            $ref: '#/definitions/utils.APIResponse'
+      summary: Register a new user
       tags:
       - Account
   /convert:
@@ -412,7 +406,7 @@ paths:
         name: messageData
         required: true
         schema:
-          $ref: '#/definitions/models.TextMessageRequestDTO'
+          $ref: '#/definitions/models.TextMessageRequestSwagger'
       produces:
       - application/json
       responses:

@@ -135,7 +135,7 @@ const docTemplate = `{
         },
         "/account/register": {
             "post": {
-                "description": "Register a new user",
+                "description": "Register a new user with username and password",
                 "consumes": [
                     "application/json"
                 ],
@@ -145,7 +145,7 @@ const docTemplate = `{
                 "tags": [
                     "Account"
                 ],
-                "summary": "Register User",
+                "summary": "Register a new user",
                 "parameters": [
                     {
                         "description": "User registration data",
@@ -159,39 +159,27 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "201": {
-                        "description": "User created",
+                        "description": "User created successfully",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/utils.APIResponse"
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "Bad request or missing fields",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/utils.APIResponse"
                         }
                     },
                     "461": {
                         "description": "Username already exists",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/utils.APIResponse"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/utils.APIResponse"
                         }
                     }
                 }
@@ -566,7 +554,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.TextMessageRequestDTO"
+                            "$ref": "#/definitions/models.TextMessageRequestSwagger"
                         }
                     }
                 ],
@@ -778,28 +766,13 @@ const docTemplate = `{
                 }
             }
         },
-        "models.TextMessageRequestDTO": {
+        "models.TextMessageRequestSwagger": {
             "type": "object",
             "properties": {
-                "createdAt": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "isOpened": {
-                    "type": "boolean"
-                },
-                "isStarred": {
-                    "type": "boolean"
-                },
                 "messageText": {
                     "type": "string"
                 },
                 "ownerUsername": {
-                    "type": "string"
-                },
-                "type": {
                     "type": "string"
                 }
             }
@@ -812,6 +785,26 @@ const docTemplate = `{
                 },
                 "username": {
                     "type": "string"
+                }
+            }
+        },
+        "utils.APIResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "description": "payload (optional)"
+                },
+                "error_code": {
+                    "description": "internal or business error",
+                    "type": "integer"
+                },
+                "message": {
+                    "description": "readable human message",
+                    "type": "string"
+                },
+                "success": {
+                    "description": "\"success\" or \"error\"",
+                    "type": "boolean"
                 }
             }
         }
@@ -829,8 +822,8 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "localhost:3000",
-	BasePath:         "/",
+	Host:             "",
+	BasePath:         "",
 	Schemes:          []string{},
 	Title:            "Voxa API",
 	Description:      "Voxa Golang Server API",

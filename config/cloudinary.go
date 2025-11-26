@@ -6,16 +6,11 @@ import (
 	"os"
 
 	"github.com/cloudinary/cloudinary-go/v2"
-	"github.com/joho/godotenv"
 )
 
 var Cloud *cloudinary.Cloudinary
 
 func InitCloudinary() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Println("No .env file found — continuing with system environment variables")
-	}
 
 	cld, err := cloudinary.NewFromParams(
 		os.Getenv("CLOUDINARY_CLOUD_NAME"),
