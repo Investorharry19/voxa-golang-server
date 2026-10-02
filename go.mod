@@ -4,7 +4,7 @@ go 1.25.0
 
 require (
 	github.com/cloudinary/cloudinary-go/v2 v2.14.0
-	github.com/gofiber/fiber/v2 v2.52.9
+	github.com/gofiber/fiber/v2 v2.52.15
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/joho/godotenv v1.5.1
 	github.com/swaggo/fiber-swagger v1.3.0

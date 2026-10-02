@@ -22,6 +22,7 @@ import (
 	"github.com/Investorharry19/voxa-golang-server/database"
 	"github.com/Investorharry19/voxa-golang-server/routers"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 
 	docs "github.com/Investorharry19/voxa-golang-server/docs"
@@ -56,6 +57,9 @@ func main() {
 
 	// Initialize Fiber
 	app := fiber.New()
+	app.Use(cors.New(cors.Config{
+		AllowOrigins: "http://localhost:5173,http://localhost:3000",
+	}))
 	app.Use(logger.New())
 
 	// Swagger endpoint

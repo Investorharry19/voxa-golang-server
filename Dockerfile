@@ -15,6 +15,10 @@ RUN go mod download
 # Copy the rest of the source code
 COPY . .
 
+# Generate Swagger documentation
+RUN go install github.com/swaggo/swag/cmd/swag@latest
+RUN swag init
+
 # Build the server
 RUN go build -o server .
 
@@ -30,9 +34,6 @@ RUN apk add --no-cache ffmpeg ca-certificates tzdata
 
 # Copy compiled Go binary from builder stage
 COPY --from=builder /app/server /server
-
-# Copy environment file (optional — remove if using Render env vars)
-# COPY --from=builder /app/.env /.env
 
 # Expose the port your app runs on
 EXPOSE 3000
